@@ -404,20 +404,31 @@
   </footer>
 
   <script>
-    function handleSubmit() {
+    async function handleSubmit() {
       const input = document.getElementById('emailInput');
       const form  = document.getElementById('emailForm');
       const success = document.getElementById('successMsg');
       const email = input.value.trim();
       if (!email || !email.includes('@')) {
-        input.style.borderBottom = '1px solid rgba(200,50,50,0.5)';
+        input.style.border = '1px solid rgba(200,50,50,0.5)';
         input.focus();
         return;
       }
-      form.style.display = 'none';
-      success.style.display = 'flex';
-      // TODO: wire up to your email capture backend (Supabase, Mailchimp, Resend etc.)
-      console.log('Signup:', email);
+      try {
+        const res = await fetch('https://formspree.io/f/xbdzlaro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        if (res.ok) {
+          form.style.display = 'none';
+          success.style.display = 'flex';
+        } else {
+          alert('Something went wrong. Please try again.');
+        }
+      } catch(e) {
+        alert('Something went wrong. Please try again.');
+      }
     }
 
     document.getElementById('emailInput').addEventListener('keydown', e => {
